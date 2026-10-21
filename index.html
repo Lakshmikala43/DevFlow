@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevFlow — From First Task to Final Release</title>
+  
+  <!-- Modern Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    :root {
+      --bg-canvas: #FBF9F5;
+      --bg-surface: #FFFFFF;
+      --bg-subtle: #F4EFE6;
+      --bg-dark: #1F2421;
+      --border-subtle: #E8E2D5;
+      --border-strong: #D1C7B7;
+      
+      --text-main: #1F2421;
+      --text-muted: #6B726C;
+      --text-light: #FBF9F5;
+
+      /* Non-blue Distinctive Palette */
+      --primary: #E05A47;         /* Terracotta / Coral */
+      --primary-hover: #C94A38;
+      --primary-light: #FDF1EE;
+      
+      --success: #2E7D32;         /* Emerald Forest */
+      --success-light: #EBF5EC;
+      
+      --warning: #D97706;         /* Amber */
+      --warning-light: #FEF3C7;
+      
+      --accent: #7C3AED;          /* Muted Plum / Lavender */
+      --accent-light: #F5F3FF;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+
+      --shadow-sm: 0 1px 3px rgba(31, 36, 33, 0.05);
+      --shadow-md: 0 4px 12px rgba(31, 36, 33, 0.08);
+      --shadow-lg: 0 12px 32px rgba(31, 36, 33, 0.12);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-canvas);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Navigation Header */
+    header.devflow-header {
+      background-color: var(--bg-surface);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0.85rem 1.75rem;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+    }
+    .brand-logo {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--primary) 0%, #B83A27 100%);
+      color: white;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(224, 90, 71, 0.35);
+    }
+    .brand-text h1 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text-main);
+      line-height: 1.1;
+    }
+    .brand-tagline {
+      font-size: 0.75rem;
+      color: var(--primary);
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+
+    .header-nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .nav-btn {
+      padding: 0.5rem 0.9rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      border: 1px solid transparent;
+      background: transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+    .nav-btn:hover, .nav-btn.active {
+      color: var(--text-main);
+      background-color: var(--bg-subtle);
+      border-color: var(--border-subtle);
+    }
+    .nav-btn.primary {
+      background-color: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    .nav-btn.primary:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .role-badge {
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .role-admin { background: #FEF3C7; color: #92400E; }
+    .role-pm { background: #EFF6FF; color: #1E40AF; }
+    .role-dev { background: #F3E8FF; color: #6B21A8; }
+    .role-qa { background: #ECFDF5; color: #065F46; }
+    .role-client { background: #FFF1F2; color: #9F1239; }
+
+    /* Main Container */
+    main.app-shell {
+      flex: 1;
+      display: flex;
+      max-width: 1440px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 1.5rem;
+      gap: 1.5rem;
+    }
+
+    /* Sidebar */
+    aside.sidebar {
+      width: 250px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .sidebar-section-title {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      font-weight: 800;
+      color: var(--text-muted);
+      padding: 0.75rem 0.75rem 0.25rem;
+      letter-spacing: 0.05em;
+    }
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.65rem 0.85rem;
+      border-radius: var(--radius-md);
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+    .sidebar-link-content {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .sidebar-link:hover {
+      background-color: var(--bg-subtle);
+      color: var(--text-main);
+    }
+    .sidebar-link.active {
+      background-color: var(--primary-light);
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    /* Workspace Content Area */
+    .workspace-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      min-width: 0;
+    }
+
+    /* Card Panels */
+    .panel {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .panel-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Metrics Grid */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .metric-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1.1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .metric-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+    .metric-value {
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text-main);
+    }
+    .metric-hint {
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .metric-hint.positive { color: var(--success); }
+    .metric-hint.warning { color: var(--warning); }
+
+    /* Kanban Board */
+    .kanban-board {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1rem;
+      align-items: start;
+      overflow-x: auto;
+      padding-bottom: 1rem;
+    }
+    .kanban-col {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      min-width: 220px;
+    }
+    .kanban-col-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .kanban-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: var(--shadow-sm);
+      cursor: grab;
+      transition: all 0.15s ease;
+    }
+    .kanban-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    .kanban-card-key {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .kanban-card-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+
+    /* Client Review Approval Box */
+    .client-approval-banner {
+      background: linear-gradient(135deg, var(--bg-surface) 0%, var(--primary-light) 100%);
+      border: 2px solid var(--primary);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .approval-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .btn-approve {
+      background-color: var(--success);
+      color: white;
+      border: none;
+      padding: 0.65rem 1.4rem;
+      border-radius: var(--radius-md);
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-approve:hover { background-color: #256629; }
+    .btn-revision {
+      background-color: var(--warning);
+      color: white;
+      border: none;
+      padding: 0.65rem 1.4rem;
+      border-radius: var(--radius-md);
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-revision:hover { background-color: #B45309; }
+
+    /* Tables */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+    .data-table th {
+      text-align: left;
+      padding: 0.75rem 1rem;
+      background: var(--bg-subtle);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      font-weight: 800;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .data-table td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--border-subtle);
+      vertical-align: middle;
+    }
+    .data-table tr:hover td {
+      background-color: var(--bg-subtle);
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .badge-success { background: var(--success-light); color: var(--success); }
+    .badge-warning { background: var(--warning-light); color: var(--warning); }
+    .badge-primary { background: var(--primary-light); color: var(--primary); }
+
+    /* Release Gate Matrix */
+    .gate-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.85rem;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      margin-bottom: 0.6rem;
+      background: var(--bg-surface);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="devflow-header">
+    <a href="#" class="brand-group" onclick="switchView('dashboard')">
+      <div class="brand-logo">
+        <i data-lucide="compass" style="width: 24px; height: 24px;"></i>
+      </div>
+      <div class="brand-text">
+        <h1>DevFlow</h1>
+        <div class="brand-tagline">From First Task to Final Release.</div>
+      </div>
+    </a>
+
+    <div class="header-nav">
+      <button class="nav-btn" onclick="switchView('projects')"><i data-lucide="folder-kanban" style="width: 16px;"></i> Projects</button>
+      <button class="nav-btn" onclick="switchView('kanban')"><i data-lucide="layout-grid" style="width: 16px;"></i> Kanban</button>
+      <button class="nav-btn" onclick="switchView('client-portal')"><i data-lucide="shield-check" style="width: 16px;"></i> Client Portal</button>
+      <button class="nav-btn" onclick="switchView('qa')"><i data-lucide="check-circle-2" style="width: 16px;"></i> QA Testing</button>
+      <button class="nav-btn" onclick="switchView('release')"><i data-lucide="rocket" style="width: 16px;"></i> Release Gate</button>
+      
+      <div style="height: 24px; width: 1px; background: var(--border-subtle); margin: 0 4px;"></div>
+      
+      <!-- Role Switcher -->
+      <span class="role-badge role-admin" id="currentUserRoleBadge">Role: ADMIN</span>
+      <select id="roleSwitcher" onchange="changeUserRole(this.value)" style="padding: 4px 8px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); font-size: 0.78rem; font-weight: 700;">
+        <option value="ADMIN">Sarah Jenkins (Admin)</option>
+        <option value="PROJECT_MANAGER">Marcus Vance (Project Mgr)</option>
+        <option value="DEVELOPER">Elena Rostova (Developer)</option>
+        <option value="QA_TESTER">David Kim (QA Tester)</option>
+        <option value="CLIENT">Rachel Thorne (Client)</option>
+      </select>
+    </div>
+  </header>
+
+  <!-- App Shell -->
+  <main class="app-shell">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-section-title">Core Delivery Workspace</div>
+      <a class="sidebar-link active" id="link-dashboard" onclick="switchView('dashboard')">
+        <span class="sidebar-link-content"><i data-lucide="layout-dashboard" style="width: 18px;"></i> Dashboard</span>
+      </a>
+      <a class="sidebar-link" id="link-projects" onclick="switchView('projects')">
+        <span class="sidebar-link-content"><i data-lucide="briefcase" style="width: 18px;"></i> Projects & Milestones</span>
+      </a>
+      <a class="sidebar-link" id="link-requirements" onclick="switchView('requirements')">
+        <span class="sidebar-link-content"><i data-lucide="file-text" style="width: 18px;"></i> Requirements</span>
+        <span class="badge badge-primary">3 Req</span>
+      </a>
+      <a class="sidebar-link" id="link-kanban" onclick="switchView('kanban')">
+        <span class="sidebar-link-content"><i data-lucide="trello" style="width: 18px;"></i> Kanban Board</span>
+        <span class="badge badge-warning">4 Active</span>
+      </a>
+
+      <div class="sidebar-section-title">Client & Quality Gate</div>
+      <a class="sidebar-link" id="link-deliverables" onclick="switchView('deliverables')">
+        <span class="sidebar-link-content"><i data-lucide="package" style="width: 18px;"></i> Deliverables</span>
+      </a>
+      <a class="sidebar-link" id="link-client-portal" onclick="switchView('client-portal')">
+        <span class="sidebar-link-content"><i data-lucide="user-check" style="width: 18px;"></i> Client Sign-off</span>
+        <span class="badge badge-warning">Review</span>
+      </a>
+      <a class="sidebar-link" id="link-qa" onclick="switchView('qa')">
+        <span class="sidebar-link-content"><i data-lucide="flask-conical" style="width: 18px;"></i> QA & Defects</span>
+      </a>
+      <a class="sidebar-link" id="link-release" onclick="switchView('release')">
+        <span class="sidebar-link-content"><i data-lucide="rocket" style="width: 18px;"></i> Release Gatekeeper</span>
+        <span class="badge badge-success">v1.2.0</span>
+      </a>
+
+      <div class="sidebar-section-title">Governance & Analytics</div>
+      <a class="sidebar-link" id="link-reports" onclick="switchView('reports')">
+        <span class="sidebar-link-content"><i data-lucide="bar-chart-3" style="width: 18px;"></i> Reports & Velocity</span>
+      </a>
+      <a class="sidebar-link" id="link-audit" onclick="switchView('audit')">
+        <span class="sidebar-link-content"><i data-lucide="history" style="width: 18px;"></i> Audit Ledger</span>
+      </a>
+      <a class="sidebar-link" id="link-settings" onclick="switchView('settings')">
+        <span class="sidebar-link-content"><i data-lucide="settings" style="width: 18px;"></i> Org Settings</span>
+      </a>
+    </aside>
+
+    <!-- Dynamic Workspace Views Container -->
+    <div class="workspace-content" id="workspaceContent">
+
+      <!-- View: Dashboard (Default) -->
+      <section id="view-dashboard">
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <span class="metric-label">Active Projects</span>
+            <span class="metric-value">2</span>
+            <span class="metric-hint positive"><i data-lucide="check-circle" style="width: 14px;"></i> 100% on schedule</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Client Approval Rate</span>
+            <span class="metric-value">94.2%</span>
+            <span class="metric-hint positive"><i data-lucide="arrow-up-right" style="width: 14px;"></i> Avg signoff 1.4 days</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">QA Test Pass Rate</span>
+            <span class="metric-value">98.5%</span>
+            <span class="metric-hint positive"><i data-lucide="shield-check" style="width: 14px;"></i> Zero critical defects</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Next Release Readiness</span>
+            <span class="metric-value">85%</span>
+            <span class="metric-hint warning"><i data-lucide="alert-triangle" style="width: 14px;"></i> 1 client sign-off pending</span>
+          </div>
+        </div>
+
+        <!-- Client Action Notice -->
+        <div class="client-approval-banner">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+              <span class="badge badge-warning" style="margin-bottom: 6px;">Action Required • Deliverable Sign-Off</span>
+              <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main);">Apex Portal v1.2.0 Staging Release Build (v1.2.0-rc2)</h2>
+              <p style="color: var(--text-muted); font-size: 0.88rem; margin-top: 4px;">Uploaded by Elena Rostova • SHA-256 Verified • Waiting for Client Approval</p>
+            </div>
+            <button class="nav-btn primary" onclick="switchView('client-portal')">Review Deliverable Version &rarr;</button>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top: 1.5rem;">
+          <div class="panel-header">
+            <h3 class="panel-title"><i data-lucide="activity" style="width: 18px; color: var(--primary);"></i> Recent Delivery Milestones</h3>
+            <span class="badge badge-success">All Systems Operational</span>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Project</th>
+                <th>Milestone</th>
+                <th>Target Date</th>
+                <th>Progress</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Apex OmniChannel Portal</strong></td>
+                <td>Sprint 4 — Client PDF Invoice Engine</td>
+                <td>Oct 25, 2026</td>
+                <td>
+                  <div style="width: 120px; background: var(--bg-subtle); height: 8px; border-radius: 4px; overflow: hidden;">
+                    <div style="width: 85%; background: var(--success); height: 100%;"></div>
+                  </div>
+                </td>
+                <td><span class="badge badge-success">On Track</span></td>
+              </tr>
+              <tr>
+                <td><strong>Cloud Infra Modernization</strong></td>
+                <td>Zero-Trust Service Mesh & mTLS</td>
+                <td>Nov 15, 2026</td>
+                <td>
+                  <div style="width: 120px; background: var(--bg-subtle); height: 8px; border-radius: 4px; overflow: hidden;">
+                    <div style="width: 60%; background: var(--primary); height: 100%;"></div>
+                  </div>
+                </td>
+                <td><span class="badge badge-primary">Active</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- View: Kanban Board -->
+      <section id="view-kanban" style="display: none;">
+        <div class="panel-header" style="border: none; padding-bottom: 0;">
+          <div>
+            <h2 style="font-size: 1.35rem; font-weight: 800;">Sprint Execution Kanban</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Apex OmniChannel Portal &bull; Sprint 4</p>
+          </div>
+          <button class="nav-btn primary" onclick="alert('Task modal opened')"><i data-lucide="plus" style="width: 16px;"></i> Add New Task</button>
+        </div>
+
+        <div class="kanban-board" style="margin-top: 1.25rem;">
+          <!-- Backlog -->
+          <div class="kanban-col">
+            <div class="kanban-col-header">
+              <span>Backlog</span>
+              <span class="badge">1</span>
+            </div>
+            <div class="kanban-card">
+              <span class="kanban-card-key">TSK-105</span>
+              <div class="kanban-card-title">Multi-currency conversion provider integration</div>
+              <span class="badge badge-primary">Low Priority</span>
+            </div>
+          </div>
+
+          <!-- To Do -->
+          <div class="kanban-col">
+            <div class="kanban-col-header">
+              <span>To Do</span>
+              <span class="badge">1</span>
+            </div>
+            <div class="kanban-card">
+              <span class="kanban-card-key">TSK-104</span>
+              <div class="kanban-card-title">QA Smoke Test Suite for Payment Gateways</div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+                <span class="badge badge-warning">High</span>
+                <span style="font-size: 0.75rem; color: var(--text-muted);">David Kim</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- In Progress -->
+          <div class="kanban-col">
+            <div class="kanban-col-header">
+              <span>In Progress</span>
+              <span class="badge">1</span>
+            </div>
+            <div class="kanban-card">
+              <span class="kanban-card-key">TSK-103</span>
+              <div class="kanban-card-title">Implement Payment Webhook Idempotency Store</div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+                <span class="badge badge-primary">Critical</span>
+                <span style="font-size: 0.75rem; color: var(--text-muted);">Elena R.</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- In Review -->
+          <div class="kanban-col">
+            <div class="kanban-col-header">
+              <span>In Review</span>
+              <span class="badge">1</span>
+            </div>
+            <div class="kanban-card" style="border-left: 3px solid var(--warning);">
+              <span class="kanban-card-key">TSK-102</span>
+              <div class="kanban-card-title">Design Client Approval PDF Layout and Template Engine</div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+                <span class="badge badge-warning">Client Signoff</span>
+                <span style="font-size: 0.75rem; color: var(--text-muted);">Elena R.</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Done -->
+          <div class="kanban-col">
+            <div class="kanban-col-header">
+              <span>Done</span>
+              <span class="badge">1</span>
+            </div>
+            <div class="kanban-card" style="opacity: 0.85;">
+              <span class="kanban-card-key">TSK-101</span>
+              <div class="kanban-card-title">Implement WebAuthn Credential Registration Service</div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+                <span class="badge badge-success">Verified</span>
+                <span style="font-size: 0.75rem; color: var(--text-muted);">14.5 hrs</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- View: Client Portal Review -->
+      <section id="view-client-portal" style="display: none;">
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h2 style="font-size: 1.35rem; font-weight: 800;">Dedicated Client Sign-Off Portal</h2>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">Authoritative review and version approval workspace for Rachel Thorne (Apex Corp)</p>
+            </div>
+            <span class="badge badge-warning">Awaiting Decision</span>
+          </div>
+
+          <div style="background: var(--bg-canvas); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+              <h3 style="font-size: 1.1rem; font-weight: 800;">Deliverable: Apex Portal v1.2.0 Staging Release Build</h3>
+              <span class="badge badge-primary">Version Tag: v1.2.0-rc2</span>
+            </div>
+            <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1rem;">
+              Release Candidate 2 includes complete multi-factor WebAuthn authentication, client invoice PDF generation, and verified staging environment access.
+            </p>
+            <div style="display: flex; gap: 1.5rem; font-size: 0.82rem; font-family: 'JetBrains Mono', monospace; color: var(--text-muted);">
+              <span>Package Size: 48.9 MB</span>
+              <span>SHA-256: e3b0c442...991b7852b855</span>
+              <span>Environment: staging.apexportal.dev</span>
+            </div>
+          </div>
+
+          <!-- Decision Form -->
+          <div style="border-top: 1px solid var(--border-subtle); padding-top: 1.25rem;">
+            <label style="font-size: 0.85rem; font-weight: 800; display: block; margin-bottom: 6px;">Client Feedback / Revision Requirements:</label>
+            <textarea id="clientFeedbackInput" rows="3" placeholder="Enter comments or specific changes needed (Mandatory when requesting revisions)..." style="width: 100%; padding: 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); font-family: inherit; font-size: 0.88rem;"></textarea>
+            
+            <div class="approval-actions" style="margin-top: 1rem;">
+              <button class="btn-approve" onclick="recordClientDecision('APPROVED')">
+                <i data-lucide="check" style="width: 18px;"></i> Formally Approve Version v1.2.0-rc2
+              </button>
+              <button class="btn-revision" onclick="recordClientDecision('REVISION_REQUESTED')">
+                <i data-lucide="refresh-cw" style="width: 18px;"></i> Request Revisions with Comments
+              </button>
+            </div>
+          </div>
+
+          <!-- Immutable Decision Audit Trail -->
+          <div style="margin-top: 2rem;">
+            <h4 style="font-size: 0.95rem; font-weight: 800; margin-bottom: 0.75rem;">Historical Decision Trail</h4>
+            <div id="decisionHistoryList">
+              <div style="padding: 0.75rem; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); margin-bottom: 0.5rem; background: var(--bg-subtle); font-size: 0.82rem;">
+                <strong>v1.2.0-rc1 (Oct 18, 2026)</strong>: <span class="badge badge-warning">Revision Requested</span> &bull; <em>"Header logo in PDF export clipped on landscape orientation. Please resolve and re-verify."</em> — Rachel Thorne
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- View: Release Gatekeeper -->
+      <section id="view-release" style="display: none;">
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h2 style="font-size: 1.35rem; font-weight: 800;">Release Gatekeeper & Readiness Matrix</h2>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">Automated deployment gating rules for Release 1.2.0 — Production</p>
+            </div>
+            <span class="badge badge-warning" id="releaseStatusBadge">Status: BLOCKED</span>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <div class="gate-item">
+              <div>
+                <strong>1. QA Automated Acceptance Suite</strong>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Pass rate $\ge$ 98% with zero open Critical/Major defects</p>
+              </div>
+              <span class="badge badge-success"><i data-lucide="check" style="width: 14px;"></i> PASSED (98.5%)</span>
+            </div>
+
+            <div class="gate-item" id="clientApprovalGateItem">
+              <div>
+                <strong>2. Formal Client Sign-Off</strong>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Designated client stakeholder must record positive sign-off for v1.2.0-rc2</p>
+              </div>
+              <span class="badge badge-warning" id="clientGateBadge"><i data-lucide="clock" style="width: 14px;"></i> PENDING SIGN-OFF</span>
+            </div>
+
+            <div class="gate-item">
+              <div>
+                <strong>3. Zero-Vulnerability Security Audit</strong>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">SAST, DAST, and dependency bill-of-materials clean</p>
+              </div>
+              <span class="badge badge-success"><i data-lucide="check" style="width: 14px;"></i> PASSED (0 CVEs)</span>
+            </div>
+
+            <div class="gate-item">
+              <div>
+                <strong>4. SOC2 / ISO27001 Data Residency Audit Trail</strong>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Cryptographic log verification and immutable audit ledger sync</p>
+              </div>
+              <span class="badge badge-success"><i data-lucide="check" style="width: 14px;"></i> PASSED</span>
+            </div>
+          </div>
+
+          <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 0.88rem; font-weight: 700; color: var(--text-muted);" id="deployRuleHint">
+              Gating Rule: Production deployment button is strictly disabled until 100% of mandatory gates are satisfied.
+            </span>
+            <button class="nav-btn primary" id="deployProdBtn" disabled style="opacity: 0.5; cursor: not-allowed;" onclick="alert('Deploying Release 1.2.0 to Production Kubernetes Cluster!')">
+              <i data-lucide="rocket" style="width: 16px;"></i> Ship Release 1.2.0
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- View: Requirements Matrix -->
+      <section id="view-requirements" style="display: none;">
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h2 style="font-size: 1.35rem; font-weight: 800;">Requirements Traceability Matrix</h2>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">Full audit chain linking business requirements to tasks, QA test cases, and deliverables</p>
+            </div>
+            <button class="nav-btn primary" onclick="alert('Create requirement dialog')"><i data-lucide="plus" style="width: 16px;"></i> New Requirement</button>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Title</th>
+                <th>Priority</th>
+                <th>Linked Tasks</th>
+                <th>QA Test Coverage</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong style="font-family: 'JetBrains Mono';">REQ-01</strong></td>
+                <td>Multi-Factor Biometric Authentication</td>
+                <td><span class="badge badge-primary">Critical</span></td>
+                <td>TSK-101 (Done)</td>
+                <td>100% (4 / 4 Passing)</td>
+                <td><span class="badge badge-success">Verified</span></td>
+              </tr>
+              <tr>
+                <td><strong style="font-family: 'JetBrains Mono';">REQ-02</strong></td>
+                <td>Client Invoice & PDF Export Engine</td>
+                <td><span class="badge badge-warning">High</span></td>
+                <td>TSK-102 (In Review)</td>
+                <td>85% (3 / 3 Passing)</td>
+                <td><span class="badge badge-warning">Under Review</span></td>
+              </tr>
+              <tr>
+                <td><strong style="font-family: 'JetBrains Mono';">REQ-03</strong></td>
+                <td>Real-time Payment Gateway Webhooks</td>
+                <td><span class="badge badge-primary">Critical</span></td>
+                <td>TSK-103 (In Progress)</td>
+                <td>90% (5 / 5 Passing)</td>
+                <td><span class="badge badge-primary">Approved</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- View: QA & Defects -->
+      <section id="view-qa" style="display: none;">
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h2 style="font-size: 1.35rem; font-weight: 800;">QA Test Plans & Defect Ledger</h2>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">Apex Portal Acceptance Plan &bull; 48 Executed Tests &bull; 0 Open Blockers</p>
+            </div>
+            <button class="nav-btn primary" onclick="alert('Log defect modal')"><i data-lucide="bug" style="width: 16px;"></i> Report Defect</button>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Defect ID</th>
+                <th>Severity</th>
+                <th>Title</th>
+                <th>Reporter</th>
+                <th>Assignee</th>
+                <th>Resolution Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong style="font-family: 'JetBrains Mono';">DEF-42</strong></td>
+                <td><span class="badge badge-primary">Major</span></td>
+                <td>PDF Invoice header clipping on iPad Safari view</td>
+                <td>David Kim (QA)</td>
+                <td>Elena R.</td>
+                <td><span class="badge badge-success">Verified Fixed</span></td>
+              </tr>
+              <tr>
+                <td><strong style="font-family: 'JetBrains Mono';">DEF-39</strong></td>
+                <td><span class="badge badge-warning">Minor</span></td>
+                <td>WebAuthn registration timeout error copy clarification</td>
+                <td>Rachel Thorne (Client)</td>
+                <td>Elena R.</td>
+                <td><span class="badge badge-success">Closed</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- View: Projects & Milestones -->
+      <section id="view-projects" style="display: none;">
+        <div class="panel">
+          <div class="panel-header">
+            <h2 style="font-size: 1.35rem; font-weight: 800;">Enterprise Project Portfolios</h2>
+            <button class="nav-btn primary" onclick="alert('New project modal')"><i data-lucide="plus" style="width: 16px;"></i> Create Project</button>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+            <div style="border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; background: var(--bg-surface);">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                <span class="badge badge-primary">DF-PORTAL</span>
+                <span class="badge badge-success">On Track</span>
+              </div>
+              <h3 style="font-size: 1.15rem; font-weight: 800;">Apex OmniChannel Customer Portal</h3>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin: 6px 0 12px;">Enterprise client self-service, invoice management, and secure biometric login platform.</p>
+              <div style="font-size: 0.8rem; color: var(--text-muted); display: flex; justify-content: space-between;">
+                <span>Delivery: Nov 30, 2026</span>
+                <span>Team: 5 Engineers</span>
+              </div>
+            </div>
+
+            <div style="border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; background: var(--bg-surface);">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                <span class="badge badge-primary">DF-CORE</span>
+                <span class="badge badge-success">On Track</span>
+              </div>
+              <h3 style="font-size: 1.15rem; font-weight: 800;">Cloud Infrastructure Modernization</h3>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin: 6px 0 12px;">Containerized microservices orchestration, zero-trust security mesh, and compliance automation.</p>
+              <div style="font-size: 0.8rem; color: var(--text-muted); display: flex; justify-content: space-between;">
+                <span>Delivery: Dec 15, 2026</span>
+                <span>Team: 4 Engineers</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- View: Audit Ledger -->
+      <section id="view-audit" style="display: none;">
+        <div class="panel">
+          <div class="panel-header">
+            <h2 style="font-size: 1.35rem; font-weight: 800;">Immutable Delivery Audit Ledger</h2>
+            <span class="badge badge-success">Cryptographically Sealed</span>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Actor</th>
+                <th>Action</th>
+                <th>Entity Target</th>
+                <th>IP Address</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Today, 10:04 AM</td>
+                <td>Elena Rostova</td>
+                <td><code>DELIVERABLE_UPLOAD</code></td>
+                <td>Apex Portal v1.2.0-rc2</td>
+                <td>172.16.0.42</td>
+              </tr>
+              <tr>
+                <td>Oct 18, 04:30 PM</td>
+                <td>Rachel Thorne (Client)</td>
+                <td><code>REVISION_REQUEST</code></td>
+                <td>Apex Portal v1.2.0-rc1</td>
+                <td>198.51.100.22</td>
+              </tr>
+              <tr>
+                <td>Oct 17, 11:15 AM</td>
+                <td>Marcus Vance (PM)</td>
+                <td><code>RELEASE_CHECKLIST_UPDATE</code></td>
+                <td>Release 1.2.0</td>
+                <td>172.16.0.12</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <script>
+    // Initialize icons
+    lucide.createIcons();
+
+    // Navigation and View Management
+    function switchView(viewName) {
+      const views = ['dashboard', 'projects', 'requirements', 'kanban', 'deliverables', 'client-portal', 'qa', 'release', 'reports', 'audit', 'settings'];
+      views.forEach(v => {
+        const el = document.getElementById('view-' + v);
+        const link = document.getElementById('link-' + v);
+        if (el) el.style.display = (v === viewName) ? 'block' : 'none';
+        if (link) {
+          if (v === viewName) link.classList.add('active');
+          else link.classList.remove('active');
+        }
+      });
+      lucide.createIcons();
+    }
+
+    // Role Switcher Simulation
+    function changeUserRole(role) {
+      const badge = document.getElementById('currentUserRoleBadge');
+      badge.textContent = 'Role: ' + role;
+      badge.className = 'role-badge';
+      if (role === 'ADMIN') badge.classList.add('role-admin');
+      else if (role === 'PROJECT_MANAGER') badge.classList.add('role-pm');
+      else if (role === 'DEVELOPER') badge.classList.add('role-dev');
+      else if (role === 'QA_TESTER') badge.classList.add('role-qa');
+      else if (role === 'CLIENT') badge.classList.add('role-client');
+    }
+
+    // Client Decision Processor
+    function recordClientDecision(decision) {
+      const feedback = document.getElementById('clientFeedbackInput').value;
+      if (decision === 'REVISION_REQUESTED' && (!feedback || feedback.trim().length === 0)) {
+        alert('Please enter detailed feedback explaining what revisions are required.');
+        return;
+      }
+
+      if (decision === 'APPROVED') {
+        alert('🎉 Decision Recorded: Deliverable v1.2.0-rc2 has been formally APPROVED by client!');
+        
+        // Update Release Gatekeeper status dynamically
+        const gateItem = document.getElementById('clientApprovalGateItem');
+        const badge = document.getElementById('clientGateBadge');
+        badge.className = 'badge badge-success';
+        badge.innerHTML = '<i data-lucide=\"check\" style=\"width: 14px;\"></i> SIGN-OFF RECORDED';
+
+        document.getElementById('releaseStatusBadge').className = 'badge badge-success';
+        document.getElementById('releaseStatusBadge').textContent = 'Status: READY FOR PRODUCTION';
+
+        const deployBtn = document.getElementById('deployProdBtn');
+        deployBtn.disabled = false;
+        deployBtn.style.opacity = '1';
+        deployBtn.style.cursor = 'pointer';
+
+        document.getElementById('deployRuleHint').textContent = 'All 4 mandatory release gates are 100% satisfied. Ready to deploy!';
+
+        // Append to history
+        const list = document.getElementById('decisionHistoryList');
+        const item = document.createElement('div');
+        item.style = 'padding: 0.75rem; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); margin-bottom: 0.5rem; background: var(--success-light); font-size: 0.82rem;';
+        item.innerHTML = `<strong>v1.2.0-rc2 (Just now)</strong>: <span class=\"badge badge-success\">Approved</span> &bull; <em>\"${feedback || 'Deliverable accepted and approved for production deployment.'}\"</em> — Rachel Thorne`;
+        list.prepend(item);
+      } else {
+        alert('Revision request logged with feedback: ' + feedback);
+      }
+      lucide.createIcons();
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  devflow-db:
+    image: postgres:15-alpine
+    container_name: devflow-postgres
+    environment:
+      POSTGRES_DB: devflow_db
+      POSTGRES_USER: devflow_user
+      POSTGRES_PASSWORD: devflow_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U devflow_user -d devflow_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  devflow-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: devflow-backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://devflow-db:5432/devflow_db
+      SPRING_DATASOURCE_USERNAME: devflow_user
+      SPRING_DATASOURCE_PASSWORD: devflow_password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8080:8080"
+    depends_on:
+      devflow-db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+    driver: local

@@ -1,0 +1,58 @@
+# Environment and Secrets (TrainPlex strict zero-secret compliance)
+.env
+.env*
+*.env*
+example.env
+.env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Java Build Outputs
+target/
+build/
+bin/
+*.class
+*.jar
+*.war
+*.ear
+
+# Node & Frontend Build Outputs
+node_modules/
+dist/
+out/
+.next/
+.turbo/
+.cache/
+
+# Testing & Coverage
+coverage/
+.nyc_output/
+*.lcov
+test-results/
+
+# IDE & Editor Files
+.idea/
+*.iml
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# OS Generated Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Log files
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
